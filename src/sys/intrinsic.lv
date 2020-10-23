@@ -1,0 +1,63 @@
+##! Runtime intrinsic definitions and types. These items are implemented
+##! using hooks into the underlying implementation.
+
+## The built in boolean type.
+type Bool
+
+def 'andz': Bool -> Bool -> Bool
+def 'xorz': Bool -> Bool -> Bool
+def 'orz': Bool -> Bool -> Bool
+
+## The built in string type.
+type Str
+
+def lens: Str -> Int
+def 'cats': Str -> Str -> Str
+def eqs: Str -> Str -> Bool
+def lts: Str -> Str -> Bool
+
+## The built in floating point type.
+type Flt
+
+def 'addf: Flt -> Flt -> Flt
+def 'subf: Flt -> Flt -> Flt
+def 'mulf: Flt -> Flt -> Flt
+def 'divf: Flt -> Flt -> Flt
+def 'remf: Flt -> Flt -> Flt
+def eqf: Flt -> Flt -> Bool
+def ltf: Flt -> Flt -> Bool
+def gef: Flt -> Flt -> Bool
+
+## The built in integer type.
+type Int
+
+def 'addi': Int -> Int -> Int
+def 'subi: Int -> Int -> Int
+def 'muli': Int -> Int -> Int
+def 'divi: Int -> Int -> Int
+def 'remi: Int -> Int -> Int
+def 'andi': Int -> Int -> Int
+def 'xori': Int -> Int -> Int
+def 'ori': Int -> Int -> Int
+def sll: Int -> Int -> Int
+def srl: Int -> Int -> Int
+def sra: Int -> Int -> Int
+def eqi: Int -> Int -> Bool
+def lti: Int -> Int -> Bool
+
+## The built in function type.
+type (->)' a b
+
+## The built in tuple (cons cell) type and its sole constructor.
+data (,)' a b => (,)' a b
+
+## The built in vector type.
+type Vec a
+
+## Vector concatenation.
+def 'catv': Vec 'a -> Vec 'a -> Vec 'a
+
+# Coversion functions
+
+def i2f: Int -> Flt
+def f2i: Flt -> Int
