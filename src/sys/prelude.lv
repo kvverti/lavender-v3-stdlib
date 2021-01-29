@@ -27,25 +27,33 @@ type (,)' => intrinsic::(,)
 ##! Common functions.
 
 ## Identity function.
-def id a => a
+def id: 'a -> 'a
+  ; a => a
 
 ## Constant function.
-def const a => (lam _. a): for b. b -> 'a
+def const: 'a -> (for b. b -> 'a)
+  ; a _ => a
 
 ## Function application.
-def ($)' f a => f a
+def ($)': ('a -> 'b) -> 'a -> 'b
+  ; f a => f a
 
 ## Function post-application.
-def '(@) => flip ($)
+def '(@): 'a -> ('a -> 'b) -> 'b
+  ; => flip ($)
 
 ## Function composition.
-def '(.)' f g a => f (g a)
+def '(.)': ('b -> 'c) -> ('a -> 'b) -> ('a -> 'c)
+  ; f g a => f (g a)
 
 ## Binary operator transposition.
-def flip f a b => f b a
+def flip: ('a -> 'b -> 'c) -> ('b -> 'a -> 'c)
+  ; f a b => f b a
 
 ## Curry tuple-accepting function.
-def curry f a b => f (a, b)
+def curry: (('a, 'b) -> 'c) -> ('a -> 'b -> 'c)
+  ; f a b => f (a, b)
 
 ## Uncurry curried function.
-def uncurry f (a, b) => f a b
+def uncurry: ('a -> 'b -> 'c) -> (('a, 'b) -> 'c)
+  ; f (a, b) => f a b
