@@ -1,0 +1,69 @@
+##! Type classes for control structures.
+
+# todo: document these
+
+##! The Functor type class.
+
+class Functor f {
+  def map: ('a -> 'b) -> f 'a -> f 'b
+}
+
+def ($:): for [Functor f]. ('a -> 'b) -> f 'a -> f 'b
+  ; => Functor::map
+
+def (.:): for [Functor f]. ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
+  ; f g a => f $: g a
+
+##! The Foldable and Traversable type classes
+
+class Foldable t {
+  def foldr: ('a -> 'b -> 'b) -> 'b -> t 'a -> 'b
+  def foldl: ('b -> 'a -> 'b) -> 'b -> t 'a -> 'b
+    ; f init ta => foldr (for a rem b. rem $ f b a) id ta init
+  def fold: for [Monoid a]. t 'a -> 'a
+    ; => foldr (<>) Monoid::empty
+}
+
+class Traversable t: Functor t, Foldable t {
+  def traverse: for [Applicative f]. ('a -> f 'b) -> t 'a -> f (t 'b)
+  def sequence: for [Applicative f]. t (f 'a) -> f (t 'a)
+    ; => traverse id
+}
+
+##! The Applicative type class.
+
+class Applicative f: Functor f {
+  def pure: 'a -> f 'a
+  def lift2: ('a -> 'b -> 'c) -> f 'a -> f 'b -> f 'c
+}
+
+def (:$:): for [Applicative f]. f ('a -> 'b) -> f 'a -> f 'b
+  ; => Applicative::lift2 id
+
+def (:.:): for [Applicative f]. f ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
+  ; f g a => f :$: g a
+
+##! The Monad type class.
+
+class Monad m: Applicative m {
+  def bind: ('a -> m 'b) -> m 'a -> m 'b
+}
+
+def (=<<): for [Monad m]. ('a -> m 'b) -> m 'a -> m 'b
+  ; => Monad::bind
+  
+def (<=<): for [Monad m]. ('b -> m 'c) -> ('a -> m 'b) -> 'a -> m 'c
+  ; f g a => f =<< g a
+  
+##! The Associative and Monoid type classes
+
+class Associative a {
+  def append: a -> a -> a
+}
+
+def (<>): for [Associative a]. a -> a -> a
+  ; => Associative::append
+
+class Monoid a: Associative a {
+  def empty: a
+}
