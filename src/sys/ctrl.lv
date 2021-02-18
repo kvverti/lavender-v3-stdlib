@@ -1,69 +1,118 @@
 ##! Type classes for control structures.
 
-# todo: document these
-
 ##! The Functor type class.
 
+## A Functor defines how to transform values in the presence of an effect.
 class Functor f {
+  ## Transforms a value inside the effect `f`.
   def map: ('a -> 'b) -> f 'a -> f 'b
 }
 
+## Transforms a value inside the effect `f`. This is an infix symbolic
+## shorthand for `Functor::map`.
 def ($:): for [Functor f]. ('a -> 'b) -> f 'a -> f 'b
   ; => Functor::map
 
+## Composes a function with an effectful function, producing an effectful
+## function of the same shape.
 def (.:): for [Functor f]. ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
   ; f g a => f $: g a
 
 ##! The Foldable and Traversable type classes
 
+## Foldable type constructors allow the aggregation of their contained values.
 class Foldable t {
+  ## Performs a lazy right fold. 
   def foldr: ('a -> 'b -> 'b) -> 'b -> t 'a -> 'b
+
+  ## Performs a strict left fold. Todo: make this strict.
   def foldl: ('b -> 'a -> 'b) -> 'b -> t 'a -> 'b
     ; f init ta => foldr (for a rem b. rem $ f b a) id ta init
+
+  ## Performs a fold over a monoid. Since monoid concatenation is associative,
+  ## the order does not matter.
   def fold: for [Monoid a]. t 'a -> 'a
     ; => foldr (<>) Monoid::empty
 }
 
+## Traversable functors allow one to pull effects out of its underlying
+## structure. In general, this is not reversible: the structure may not
+## in general be pulled out of an effect.
 class Traversable t: Functor t, Foldable t {
+  ## Walk the structure of `t` and construct an equivalent structure
+  ## using the values produced by the given function, while pulling the
+  ## function's effect outside of the structure.
   def traverse: for [Applicative f]. ('a -> f 'b) -> t 'a -> f (t 'b)
+
+  ## Pull the effect `f` inside of the structure to the outside of the
+  ## structure.
+  ##
+  ## If `t` and `f` are both Applicative and Traversable, then this
+  ## transformation is reversible.
   def sequence: for [Applicative f]. t (f 'a) -> f (t 'a)
     ; => traverse id
 }
 
 ##! The Applicative type class.
 
+## Applicative functors define function application within an effect `f`.
 class Applicative f: Functor f {
+  ## Tags the given computation with this effect.
   def pure: 'a -> f 'a
+  
+  ## Combines two computations within the effect `f`.
   def lift2: ('a -> 'b -> 'c) -> f 'a -> f 'b -> f 'c
 }
 
+## Performs function application in the context of the effect `f`.
 def (:$:): for [Applicative f]. f ('a -> 'b) -> f 'a -> f 'b
   ; => Applicative::lift2 id
 
+## Composes a function inside an effect with an effectful function, producing
+## an effectful function with the same shape.
 def (:.:): for [Applicative f]. f ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
   ; f g a => f :$: g a
 
 ##! The Monad type class.
 
+## A Monad is an Applicative functor that additionally defines
+## how to compose sequences of effectful transformations.
 class Monad m: Applicative m {
+  ## Applies an effectful function in the context of the same effect.
   def bind: ('a -> m 'b) -> m 'a -> m 'b
+  
+  ## Flattens an effect nested within itself.
+  def join: m (m 'a) -> m 'a
+    ; => bind id
 }
 
+
+## Applies an effectful function in the context of the same effect. This is
+## an infix symbolic shorhand for `Monad::bind`.
 def (=<<): for [Monad m]. ('a -> m 'b) -> m 'a -> m 'b
   ; => Monad::bind
-  
+
+## Composes two effectful functions, producing an effectful function with the
+## same shape.
 def (<=<): for [Monad m]. ('b -> m 'c) -> ('a -> m 'b) -> 'a -> m 'c
   ; f g a => f =<< g a
   
 ##! The Associative and Monoid type classes
 
+## Defines a fully associative operator among values of the type `a`.
 class Associative a {
+  ## Performs an associative operation.
   def append: a -> a -> a
 }
 
+## An infix symbolic shorthand for `Associative::append`.
 def (<>): for [Associative a]. a -> a -> a
   ; => Associative::append
 
+## A Monoid is an Associative type that additionally contains
+## a value that acts as the identity under the associative
+## operator.
 class Monoid a: Associative a {
+  ## The identity value for the associative operator of `a`.
   def empty: a
 }
