@@ -1,0 +1,31 @@
+##! The Option type, which may or may not hold a value.
+
+## The Option type.
+data Option a => None | Some a
+
+## Unwraps the content of an option, or uses the provided value.
+def unwrap: 'a -> Option 'a -> 'a
+  ; d ; (Some a) => a
+      ; None => d
+
+## Discards values according to the given predicate.
+def filter: ('a -> Bool) -> 'a -> Option 'a
+  ; f a => h a $ f a
+  where h a ; true => Some a
+            ; false => None
+
+## Passes the given value if the Option is `None`, and discards it
+## otherwise.
+def ifNone: 'b -> Option 'a -> Option 'b
+  ; b ; (Some _) => None
+      ; None => Some b
+
+## Determines whether the Option contains a value.
+def isSome: Option 'a -> Bool
+  ; (Some _) => true
+  ; None => false
+
+## Determines whether the Option does not contain a value.
+def isNone: Option 'a -> Bool
+  ; (Some _) => false
+  ; None => true
