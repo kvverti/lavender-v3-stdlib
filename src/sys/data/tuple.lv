@@ -1,0 +1,37 @@
+##! The tuple, or fundamental product type.
+
+## The tuple type. Both the type and constructor are right associative,
+## so that `(a, b, c)` is equivalent to `(a, (b, c))`.
+data (,)' a b => (,)' a b
+
+## Get the first element of the tuple, and discard the second.
+def fst: ('a, 'b) -> 'a
+  ; (a, _) => a
+  
+## Get the second element of the tuple, and discard the first.
+def snd: ('a, 'b) -> 'b
+  ; (_, b) => b
+
+## Transforms the first element of a given tuple.
+def mapFst: ('a -> 'c) -> ('a, 'b) -> ('c, 'b)
+  ; f (a, b) => (f a, b)
+
+## Transforms the second element of a given tuple.
+def mapSnd: ('b -> 'c) -> ('a, 'b) -> ('a, 'c)
+  ; f (a, b) => (a, f b)
+
+## Transform both elements of a given tuple
+def mapTup: ('a -> 'c) -> ('b -> 'd) -> ('a, 'b) -> ('c, 'd)
+  ; f g (a, b) => (f a, g b)
+
+## Flatten a nested tuple, preserving the order of the inner elements.
+def transpose: (('a, 'b), 'c) -> ('a, 'b, 'c)
+  ; ((a, b), c) => (a, b, c)
+
+## Duplicate a value. Todo: make this strict.
+def dup: 'a -> ('a, 'a)
+  ; a => (a, a)
+
+## Swap the positions of the tuple elements.
+def swap: ('a, 'b) -> ('b, 'a)
+  ; (a, b) => (b, a)
