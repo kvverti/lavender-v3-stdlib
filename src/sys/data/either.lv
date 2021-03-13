@@ -1,0 +1,42 @@
+##! Either, the fundamental sum type.
+
+## The Either type, which contains either a value of type `a`
+## or a value of type `b`. The type is left associative, so
+## `a + b + c` is equivalent to `(a + b) + c`.
+type '(+) a b => Left a | Right b
+
+## Get the left element, if it exists.
+def left: ('a + 'b) -> Option 'a
+  ; (Left a) => Some a
+  ; (Right _) => None
+  
+## Get the right element, if it exists.
+def right: ('a + 'b) -> Option 'b
+  ; (Left _) => None
+  ; (Right b) => Some b
+
+## Transforms the left element of a given sum.
+def mapLeft: ('a -> 'c) -> ('a + 'b) -> ('c + 'b)
+  ; f ; (Left a) => Left $ f a
+      ; (Right b) => Right b
+
+## Transforms the right element of a given sum.
+def mapRight: ('b -> 'c) -> ('a + 'b) -> ('a + 'c)
+  ; f ; (Left a) => Left a
+      ; (Right b) => Right $ f b
+
+## Transform either element of a given sum.
+def mapSum: ('a -> 'c) -> ('b -> 'd) -> ('a + 'b) -> ('c + 'd)
+  ; f g ; (Left a) => Left $ f a
+        ; (Right b) => Right $ g b
+
+## Flatten a right-nested sum.
+def flatten: ('a + ('b + 'c)) -> ('a + 'b + 'c)
+  ; (Left a) => Left $ Left a
+  ; (Right (Left b)) => Left $ Right b
+  ; (Right (Right c)) => Right c
+
+## Swaps the left and right elements of a sum.
+def swap: ('a + 'b) -> ('b + 'a)
+  ; (Left a) => Right a
+  ; (Right b) => Left b
