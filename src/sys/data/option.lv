@@ -10,9 +10,10 @@ def unwrap: 'a -> Option 'a -> 'a
 
 ## Discards values according to the given predicate.
 def filter: ('a -> Bool) -> 'a -> Option 'a
-  ; f a => h a $ f a
-  where h a ; true => Some a
-            ; false => None
+  ; f a =>
+    case f a
+      ; true => Some a
+      ; false => None
 
 ## Passes the given value if the Option is `None`, and discards it
 ## otherwise.
