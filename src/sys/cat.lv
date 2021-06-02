@@ -1,0 +1,27 @@
+##! This namespace contains functions related to stack-based (concatenative) operations.
+
+import sys::data::tuple
+
+def push: 'a -> 'x -> ('a, 'x)
+  ; => (,)
+
+def push2: ('a, 'b) -> 'x -> ('a, 'b, 'x)
+  ; => curry tuple::flatten
+
+def lift: ('a -> 'b) -> ('a, 'x) -> ('b, 'x)
+  ; tuple::mapFst
+
+def lift2: ('a -> 'b -> 'c) -> ('a, 'b, 'x) -> ('c, 'x)
+  ; f (a, b, x) => (f a b, x)
+
+def dup: ('a, 'x) -> ('a, 'a, 'x)
+  ; (a, x) => (a, a, x)
+
+def drop: ('a, 'x) -> 'x
+  ; (_, x) => x
+
+def swap: ('a, 'b, 'x) -> ('b, 'a, 'x)
+  ; (a, b, x) => (b, a, x)
+
+def '(|>): ('a -> 'b) -> ('b -> 'c) -> ('a -> 'c)
+  ; => flip (.)
