@@ -40,3 +40,8 @@ def flatten: ('a + ('b + 'c)) -> ('a + 'b + 'c)
 def swap: ('a + 'b) -> ('b + 'a)
   ; (Left a) => Right a
   ; (Right b) => Left b
+
+## Collapses a sum where both variants are of the same type.
+def collapse: ('a + 'a) -> 'a
+  ; (Left a) => a
+  ; (Right a) => a
