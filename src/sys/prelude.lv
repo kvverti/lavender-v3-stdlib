@@ -2,27 +2,14 @@
 ##! imported automatically into every Lavender program compiled with the
 ##! standard library.
 
-import sys::intrinsic
+##! Aliases for common types.
 
-##! Aliases for intrinsic types.
-
-## The boolean type.
-type Bool => intrinsic::Bool
-
-## The float type.
-type Flt => intrinsic::Flt
-
-## The integer type.
-type Int => intrinsic::Int
-
-## The string type.
-type Str => intrinsic::Str
-
-## The function type.
-type (->)' => intrinsic::(->)
-
-## The tuple type.
-type (,)' => intrinsic::(,)
+export type sys::intrinsic::Flt
+export type sys::intrinsic::Int
+export type sys::intrinsic::Str
+export type sys::intrinsic::(->)
+export data sys::data::tuple::(,)
+export data sys::data::option::Option
 
 ##! Common functions.
 
@@ -37,6 +24,9 @@ def const: 'a -> (for b. b -> 'a)
 ## Function application.
 def ($)': ('a -> 'b) -> 'a -> 'b
   ; f a => f a
+
+## Strict function application.
+export def sys::intrinsic::strictAp as ($!)'
 
 ## Function post-application.
 def '(@): 'a -> ('a -> 'b) -> 'b

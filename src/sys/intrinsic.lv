@@ -1,13 +1,6 @@
 ##! Runtime intrinsic definitions and types. These items are implemented
 ##! using hooks into the underlying implementation.
 
-## The built in boolean type.
-type Bool
-
-def 'andz': Bool -> Bool -> Bool
-def 'xorz': Bool -> Bool -> Bool
-def 'orz': Bool -> Bool -> Bool
-
 ## The built in string type.
 type Str
 
@@ -48,9 +41,6 @@ def lti: Int -> Int -> Bool
 ## The built in function type.
 type (->)' a b
 
-## The built in tuple (cons cell) type and its sole constructor.
-data (,)' a b => (,)' a b
-
 ## The built in vector type.
 type Vec a
 
@@ -61,3 +51,7 @@ def 'catv': Vec 'a -> Vec 'a -> Vec 'a
 
 def i2f: Int -> Flt
 def f2i: Flt -> Int
+
+# Strict application. Evaluating `strictAp f a` will
+# evaluate `a` before applying `f` to `a`.
+def strictAp: ('a -> 'b) -> 'a -> 'b

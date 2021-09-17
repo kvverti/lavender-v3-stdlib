@@ -10,12 +10,12 @@ class Functor f {
 
 ## Transforms a value inside the effect `f`. This is an infix symbolic
 ## shorthand for `Functor::map`.
-def ($:): for [Functor f]. ('a -> 'b) -> f 'a -> f 'b
+def ($:): for f [Functor f]. ('a -> 'b) -> f 'a -> f 'b
   ; => Functor::map
 
 ## Composes a function with an effectful function, producing an effectful
 ## function of the same shape.
-def (.:): for [Functor f]. ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
+def (.:): for f [Functor f]. ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
   ; f g a => f $: g a
 
 ##! The Foldable and Traversable type classes
@@ -25,13 +25,13 @@ class Foldable t {
   ## Performs a lazy right fold. 
   def foldr: ('a -> 'b -> 'b) -> 'b -> t 'a -> 'b
 
-  ## Performs a strict left fold. Todo: make this strict.
+  ## Performs a strict left fold.
   def foldl: ('b -> 'a -> 'b) -> 'b -> t 'a -> 'b
-    ; f init ta => foldr (for a rem b. rem $ f b a) id ta init
+    ; f init ta => foldr (for a rem b. rem $! f b a) id ta init
 
   ## Performs a fold over a monoid. Since monoid concatenation is associative,
   ## the order does not matter.
-  def fold: for [Monoid a]. t 'a -> 'a
+  def fold: for a [Monoid a]. t 'a -> 'a
     ; => foldr (<>) Monoid::empty
 }
 
@@ -42,14 +42,14 @@ class Traversable t: Functor t, Foldable t {
   ## Walk the structure of `t` and construct an equivalent structure
   ## using the values produced by the given function, while pulling the
   ## function's effect outside of the structure.
-  def traverse: for [Applicative f]. ('a -> f 'b) -> t 'a -> f (t 'b)
+  def traverse: for f [Applicative f]. ('a -> f 'b) -> t 'a -> f (t 'b)
 
   ## Pull the effect `f` inside of the structure to the outside of the
   ## structure.
   ##
   ## If `t` and `f` are both Applicative and Traversable, then this
   ## transformation is reversible.
-  def sequence: for [Applicative f]. t (f 'a) -> f (t 'a)
+  def sequence: for f [Applicative f]. t (f 'a) -> f (t 'a)
     ; => traverse id
 }
 
@@ -65,12 +65,12 @@ class Applicative f: Functor f {
 }
 
 ## Performs function application in the context of the effect `f`.
-def (:$:): for [Applicative f]. f ('a -> 'b) -> f 'a -> f 'b
+def (:$:): for f [Applicative f]. f ('a -> 'b) -> f 'a -> f 'b
   ; => Applicative::lift2 id
 
 ## Composes a function inside an effect with an effectful function, producing
 ## an effectful function with the same shape.
-def (:.:): for [Applicative f]. f ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
+def (:.:): for f [Applicative f]. f ('b -> 'c) -> ('a -> f 'b) -> 'a -> f 'c
   ; f g a => f :$: g a
 
 ##! The Monad type class.
@@ -89,14 +89,14 @@ class Monad m: Applicative m {
 
 ## Applies an effectful function in the context of the same effect. This is
 ## an infix symbolic shorhand for `Monad::bind`.
-def (=<<): for [Monad m]. ('a -> m 'b) -> m 'a -> m 'b
+def (=<<): for m [Monad m]. ('a -> m 'b) -> m 'a -> m 'b
   ; => Monad::bind
 
 ## Composes two effectful functions, producing an effectful function with the
 ## same shape.
-def (<=<): for [Monad m]. ('b -> m 'c) -> ('a -> m 'b) -> 'a -> m 'c
+def (<=<): for m [Monad m]. ('b -> m 'c) -> ('a -> m 'b) -> 'a -> m 'c
   ; f g a => f =<< g a
-  
+
 ##! The Associative and Monoid type classes
 
 ## Defines a fully associative operator among values of the type `a`.
@@ -106,7 +106,7 @@ class Associative a {
 }
 
 ## An infix symbolic shorthand for `Associative::append`.
-def (<>): for [Associative a]. a -> a -> a
+def (<>): for a [Associative a]. a -> a -> a
   ; => Associative::append
 
 ## A Monoid is an Associative type that additionally contains
